@@ -1,147 +1,42 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <!-- Google Search Console -->
-  <meta
-    name="google-site-verification"
-    content="IGrPwzWVnKRFjcr092MlTRJThORWh6YwzkknYgEyeyU"
-  />
-
   <meta charset="utf-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
-  />
-
-  <!-- SEO -->
-  <title>ملاذ الطير | لعبة جماعية أونلاين</title>
-
-  <meta
-    name="description"
-    content="ملاذ الطير — لعبة جماعية أونلاين تجمع التحالف والخيانة والتصويت على جزيرة غامضة. العب مع أصدقائك وحاول أن تكون آخر من ينجو."
-  />
-
-  <meta name="robots" content="index, follow" />
-
-  <link
-    rel="canonical"
-    href="https://malath-altair.vercel.app/"
-  />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="theme-color" content="#060d12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>ملاذ الطير</title>
+  <meta name="description" content="ملاذ الطير — لعبة جماعية أونلاين: تحالف، خيانة، وتصويت على جزيرة غامضة." />
   <meta name="author" content="المبرمج فهد" />
   <meta name="application-name" content="ملاذ الطير" />
   <meta name="apple-mobile-web-app-title" content="ملاذ الطير" />
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="ملاذ الطير | لعبة جماعية أونلاين" />
-  <meta
-    property="og:description"
-    content="تحالف، خيانة وتصويت على جزيرة غامضة. العب ملاذ الطير أونلاين."
-  />
-  <meta property="og:url" content="https://malath-altair.vercel.app/" />
-  <meta property="og:site_name" content="ملاذ الطير" />
-  <meta property="og:locale" content="ar_SA" />
-
-  <!-- Mobile -->
-  <meta name="theme-color" content="#060d12" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="black-translucent"
-  />
-
-  <!-- Icon -->
-  <link
-    rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦅</text></svg>"
-  />
-
-  <!-- Fonts -->
+  <meta property="og:title" content="ملاذ الطير" />
+  <meta property="og:description" content="تحالف مع من شئت… الجميع يستطيع الخيانة." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦅</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
-
-  <link rel="preload" href="/js/game.js" as="script" />
   <link rel="preconnect" href="https://js.pusher.com" />
-
+  <link rel="preload" href="/js/game.js" as="script" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/game.css" />
-
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "VideoGame",
-    "name": "ملاذ الطير",
-    "url": "https://malath-altair.vercel.app/",
-    "description": "ملاذ الطير لعبة جماعية أونلاين تجمع التحالف والخيانة والتصويت على جزيرة غامضة.",
-    "inLanguage": "ar",
-    "genre": [
-      "Multiplayer",
-      "Online Game",
-      "Social Deduction"
-    ],
-    "applicationCategory": "Game",
-    "operatingSystem": "Web Browser",
-    "author": {
-      "@type": "Person",
-      "name": "المبرمج فهد"
-    }
-  }
-  </script>
 </head>
-
 <body>
-
-  <!-- معلومات تساعد محركات البحث على فهم الموقع -->
-  <header class="seo-header">
-    <h1>ملاذ الطير</h1>
-    <p>
-      لعبة جماعية أونلاين تجمع التحالف والخيانة والتصويت
-      على جزيرة غامضة.
-    </p>
-  </header>
-
   <!-- المشهد الخلفي: سماء ليلية + قمر + أمواج -->
   <div class="scene" aria-hidden="true">
     <div class="moon"></div>
     <div class="stars"></div>
-
-    <svg
-      class="waves"
-      viewBox="0 0 1440 220"
-      preserveAspectRatio="none"
-    >
-      <path
-        class="w1"
-        d="M0 120 C240 80 480 160 720 120 C960 80 1200 160 1440 120 V220 H0Z"
-      />
-      <path
-        class="w2"
-        d="M0 150 C240 115 480 185 720 150 C960 115 1200 185 1440 150 V220 H0Z"
-      />
+    <svg class="waves" viewBox="0 0 1440 220" preserveAspectRatio="none">
+      <path class="w1" d="M0 120 C240 80 480 160 720 120 C960 80 1200 160 1440 120 V220 H0Z" />
+      <path class="w2" d="M0 150 C240 115 480 185 720 150 C960 115 1200 185 1440 150 V220 H0Z" />
     </svg>
   </div>
-
   <div id="app"></div>
-
   <div id="fx" aria-hidden="true"></div>
-
   <div id="modal" hidden></div>
-
   <div id="toast" role="status" aria-live="polite"></div>
-
-  <div id="net" hidden>
-    جارٍ إعادة الاتصال…
-  </div>
-
+  <div id="net" hidden>جارٍ إعادة الاتصال…</div>
   <script src="/js/game.js"></script>
-
 </body>
 </html>
