@@ -695,3 +695,60 @@ table.stats { width: 100%; min-width: 520px; border-collapse: collapse; font-siz
 
 
 
+
+/* ==========================================================
+   Mobile compatibility overrides
+   Keeps the original styles above and adds browser fallbacks.
+   ========================================================== */
+:root {
+  /* Older iOS Safari does not understand dvh; keep vh as fallback. */
+  --app-h: 100vh;
+}
+@supports (height: 100dvh) {
+  :root { --app-h: 100dvh; }
+}
+html, body { min-height: 100%; }
+#app { min-height: var(--app-h); }
+.game { min-height: 0; min-width: 0; }
+.stage { min-width: 0; min-height: 0; }
+
+/* Container query units are missing in older mobile Safari/WebViews. */
+@supports not (width: 100cqh) {
+  .map {
+    width: min(100vw, 100vh);
+    width: min(100vw, var(--app-h));
+  }
+}
+
+/* Compact phones: keep HUD and controls within the visible area. */
+@media (max-width: 380px) {
+  .hud { padding-inline: 8px; }
+  .hud-top { gap: 7px; }
+  .round-badge { width: 48px; height: 54px; }
+  .timer { width: 52px; height: 52px; }
+  .phase-name { font-size: 1.15rem; }
+  .dock { gap: 3px; padding-inline: 4px; }
+  .dbtn { padding-inline: 1px; font-size: .66rem; }
+  .panel { padding: 14px; }
+  .screen { padding-inline: 12px; }
+}
+
+/* Short landscape viewports, including phones with browser chrome visible. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .screen { padding-top: calc(8px + var(--safe-t)); padding-bottom: calc(10px + var(--safe-b)); }
+  .logo { margin: 8px 0 12px; }
+  .game { grid-template-rows: auto minmax(0, 1fr) auto; }
+  .hud { padding-top: calc(4px + var(--safe-t)); padding-bottom: 4px; }
+  .hud-row { margin-top: 4px; }
+  .round-badge, .timer { width: 46px; height: 46px; }
+  .dock { padding-top: 4px; padding-bottom: calc(4px + var(--safe-b)); }
+  .dbtn { min-height: 44px; padding-top: 4px; padding-bottom: 3px; }
+  .dbtn .ic { font-size: 1.2rem; }
+  .sheet, .sheet.compact { max-height: 90%; }
+}
+
+/* Respect notches and home indicators in standalone/fullscreen mobile modes. */
+@supports (padding: max(0px)) {
+  .screen { padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+  .hud { padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
+}
