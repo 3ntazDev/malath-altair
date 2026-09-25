@@ -881,31 +881,28 @@
 
   function hudHtml() {
     const v = S.view, m = v.match, ph = v.room.phase;
-    const [label, hint] = PHASES[ph] || [ph, ''];
-    const me = player(S.user.id);
+    const [label] = PHASES[ph] || [ph];
     const [, todLabel] = todOf(m.round);
     const alive = m.myStatus === 'ALIVE';
     return `<div class="hud-top">
         <div class="round-badge" aria-label="الجولة ${m.round}"><div><small>ROUND</small><b>${m.round}</b></div></div>
-        <div class="phase-box"><div class="phase-name">${v.room.paused ? '⏸ متوقفة مؤقتًا' : label}</div><div class="phase-hint">${v.room.paused ? 'الـHost أوقف اللعبة. الوقت متجمد.' : hint}</div></div>
+        <div class="phase-box">
+          <div class="phase-name">${v.room.paused ? '⏸ متوقفة مؤقتًا' : label}</div>
+          <div class="hud-meta"><button class="alive" data-act="sheet" data-sheet="players">👥 ${m.aliveCount}/${m.players.length}</button><span>·</span><span>${todLabel}</span></div>
+        </div>
+        ${v.me.isHost ? '<button class="hud-admin" data-act="sheet" data-sheet="admin" aria-label="إدارة الغرفة">⚙️</button>' : '<span></span>'}
         <div class="timer ${once(`t-${S.phaseKey}`) ? 'start' : ''} ${v.room.paused ? 'paused' : ''}" data-timer ${v.room.phaseEndsAt || v.room.paused ? '' : 'hidden'}><svg viewBox="0 0 64 64"><circle class="track" cx="32" cy="32" r="27"/><circle class="ring" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="0"/></svg><span class="t">${v.room.paused ? '⏸' : '--:--'}</span></div>
       </div>
-      <div class="hud-row">
-        ${me ? `<button class="me-chip" data-act="sheet" data-sheet="profile" data-id="${me.id}">${portrait(me.characterId)}<span>${esc(me.name)}</span></button>` : ''}
-        <button class="pill alive" data-act="sheet" data-sheet="players"><i></i>👥 ${m.aliveCount} / ${m.players.length}</button>
-        <span class="pill tod">${todLabel}</span>
-        ${v.me.isHost ? '<button class="pill admin" data-act="sheet" data-sheet="admin">⚙️ إدارة</button>' : ''}
-      </div>
-      ${!alive ? `<div class="spectate"><span>${v.room.settings.ALLOW_SPECTATORS ? '👻 وضع المشاهدة — لا ترى أي أسرار' : 'تم إقصاؤك. النتيجة تظهر عند النهاية.'}</span><button class="gbtn sm ghost" data-act="leave">خروج</button></div>` : ''}`;
+      ${!alive ? `<div class="spectate"><span>${v.room.settings.ALLOW_SPECTATORS ? '👻 تشاهد فقط' : 'تم إقصاؤك'}</span><button class="gbtn sm ghost" data-act="leave">خروج</button></div>` : ''}`;
   }
 
   function bannerHtml() {
     const v = S.view, m = v.match, ph = v.room.phase, alive = m.myStatus === 'ALIVE';
     let top = '';
     if (v.room.paused) top = '⏸ اللعبة متوقفة مؤقتًا من الـHost';
-    else if (ph === 'PRIVATE_CHAT' && alive) top = '💬 اضغط على أي شخصية لبدء محادثة خاصة';
-    else if (ph === 'ABILITY') top = m.ability && m.ability.canUse ? '👁️ لديك الجاسوس — افتح القدرة من الأسفل' : '🌫️ الضباب يخيّم… ربما يتجسس أحدهم الآن';
-    else if (ph === 'VOTING' && alive && m.vote) top = m.vote.myVote ? `✔ صوتك مسجّل — صوّت ${m.vote.votedCount} من ${m.vote.totalVoters}` : '🗳️ من يغادر الجزيرة؟ اضغط على شخصية';
+    else if (ph === 'PRIVATE_CHAT' && alive) top = '💬 اضغط على شخصية للمحادثة';
+    else if (ph === 'ABILITY') top = m.ability && m.ability.canUse ? '👁️ لديك الجاسوس — من الأسفل' : '🌫️ أحدهم قد يتجسس الآن…';
+    else if (ph === 'VOTING' && alive && m.vote) top = m.vote.myVote ? `✔ صوّت ${m.vote.votedCount} من ${m.vote.totalVoters}` : '🗳️ اضغط على من يغادر الجزيرة';
     else if (ph === 'VOTING') top = '🗳️ الناجون يصوّتون…';
     let bottom = '';
     const pick = S.votePick && isCandidate(S.votePick) && player(S.votePick);
@@ -917,7 +914,8 @@
         <button class="gbtn danger block" data-act="vote">🗳️ CONFIRM VOTE · تأكيد</button>
         <p class="cb-note">صوت واحد، سري، ولا يمكن تغييره.</p></div>`;
     }
-    return `${top ? `<div class="banner" ${once(`b-${S.phaseKey}-${top}`) ? 'data-in' : ''}>${top}</div>` : ''}${bottom}`;
+    const hint = ph === 'PRIVATE_CHAT' && alive && !v.room.paused ? 'hint' : '';
+    return `${top ? `<div class="banner ${hint}" ${once(`b-${S.phaseKey}-${top}`) ? 'data-in' : ''}>${top}</div>` : ''}${bottom}`;
   }
 
   function layerHtml() {
@@ -1280,18 +1278,29 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden && S.user) scheduleSync(0); });
   window.addEventListener('online', () => S.user && scheduleSync(0));
 
-  // لوحة المفاتيح على الجوال: اجعل التطبيق بارتفاع الجزء المرئي
-  if (window.visualViewport) {
-    const fit = () => {
-      document.documentElement.style.setProperty('--app-h', `${window.visualViewport.height}px`);
-      window.scrollTo(0, 0);
-      const m = document.getElementById('msgs');
-      if (m && document.activeElement && document.activeElement.id === 'composer') m.scrollTop = m.scrollHeight;
-    };
-    window.visualViewport.addEventListener('resize', fit);
-    window.addEventListener('resize', () => { if (document.getElementById('g')) updateWorld(); });
-    fit();
+  // الجوال: التطبيق مثبت على الجزء الظاهر من الشاشة فقط
+  // (يحل الفراغ فوق، واختفاء الأزرار تحت، وظهور شريط العنوان/لوحة المفاتيح في سامسونج وآيفون)
+  const root = document.documentElement.style;
+  function fitViewport() {
+    const vv = window.visualViewport;
+    const h = vv ? vv.height : window.innerHeight;
+    const top = vv ? Math.max(0, vv.offsetTop) : 0;
+    root.setProperty('--app-h', `${Math.round(h)}px`);
+    root.setProperty('--app-top', `${Math.round(top)}px`);
+    if (window.scrollY) window.scrollTo(0, 0);
+    const m = document.getElementById('msgs');
+    if (m && document.activeElement && document.activeElement.id === 'composer') m.scrollTop = m.scrollHeight;
   }
+  let fitRaf = 0;
+  const fitSoon = () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(() => { fitViewport(); if (document.getElementById('g')) updateWorld(); }); };
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fitSoon);
+    window.visualViewport.addEventListener('scroll', fitSoon);
+  }
+  window.addEventListener('resize', fitSoon);
+  window.addEventListener('orientationchange', () => setTimeout(fitSoon, 300));
+  document.addEventListener('focusout', () => setTimeout(fitSoon, 50));
+  fitViewport();
 
   (async function boot() {
     try {
