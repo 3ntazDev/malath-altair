@@ -7,4 +7,10 @@
     <priority>1.0</priority>
   </url>
 
+  <url>
+    <loc>https://malath-altair.vercel.app/privacy.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
 </urlset>

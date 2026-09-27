@@ -63,7 +63,8 @@ async function until(bots, pred, ms = 10000) {
   }
   throw new Error('timeout');
 }
-const CH = ['saqr', 'jabal', 'shaheen', 'hakeem', 'sultan', 'qadi', 'riven', 'kael', 'mira', 'nox', 'ayla', 'raven', 'kairo', 'luna', 'zane', 'vera', 'sora', 'ember'].map((s) => `char_${s}`);
+const CH = require('../lib/characters').CHARACTERS.map((c) => c.characterId);
+const LIMIT = require('../lib/config').PLAYER_LIMIT;
 
 (async () => {
   await new Promise((r) => server.listen(3998, r));
@@ -78,16 +79,17 @@ const CH = ['saqr', 'jabal', 'shaheen', 'hakeem', 'sultan', 'qadi', 'riven', 'ka
 
   // ---------- 15-player capacity + race ----------
   const crowd = [];
-  for (let i = 0; i < 17; i++) crowd.push(await mkBot(`P${i}`, CH[i]));
-  assert.strictEqual((await api(crowd[0], 'room/create', { settings: { MAX_PLAYERS: 16 } })).code, 'INVALID', 'max 15 enforced');
-  const big = await api(crowd[0], 'room/create', { roomName: 'Big', settings: { MAX_PLAYERS: 15 } });
+  for (let i = 0; i < LIMIT; i++) crowd.push(await mkBot(`P${i}`, CH[i]));
+  for (let i = LIMIT; i < LIMIT + 2; i++) crowd.push(await mkBot(`P${i}`, CH[i % CH.length]));
+  assert.strictEqual((await api(crowd[0], 'room/create', { settings: { MAX_PLAYERS: LIMIT + 1 } })).code, 'INVALID', 'max enforced');
+  const big = await api(crowd[0], 'room/create', { roomName: 'Big', settings: { MAX_PLAYERS: LIMIT } });
   assert(big.ok && big.code.length === 6);
   // 16 players try to join at the same time → exactly 14 succeed (host + 14 = 15)
-  const results = await Promise.all(crowd.slice(1, 17).map((b) => api(b, 'room/join', { code: big.code })));
-  assert.strictEqual(results.filter((r) => r.ok).length, 14, 'exactly 15 in room');
-  assert(results.filter((r) => !r.ok).every((r) => r.code === 'ROOM_FULL'));
+  const results = await Promise.all(crowd.slice(1, LIMIT + 2).map((b) => api(b, 'room/join', { code: big.code })));
+  assert.strictEqual(results.filter((r) => r.ok).length, LIMIT - 1, 'exactly LIMIT in room');
+  assert(results.filter((r) => !r.ok).every((r) => ['ROOM_FULL', 'CHARACTER_TAKEN'].includes(r.code)));
   await sync(crowd[0]);
-  assert.strictEqual(crowd[0].view.room.members.length, 15);
+  assert.strictEqual(crowd[0].view.room.members.length, LIMIT);
   assert.strictEqual(crowd[0].view.room.full, true);
   assert((await api(crowd[0], 'room/start')).ok);
   await until([crowd[0]], () => crowd[0].view.room.phase === 'PRIVATE_CHAT');
@@ -234,7 +236,7 @@ const CH = ['saqr', 'jabal', 'shaheen', 'hakeem', 'sultan', 'qadi', 'riven', 'ka
   const counts = await db.query(`SELECT (SELECT count(*) FROM messages) m, (SELECT count(*) FROM votes) v, (SELECT count(*) FROM ability_uses) a, (SELECT count(*) FROM game_players) gp`);
   const row = counts.rows[0];
   assert.strictEqual(fahad.view.match.stats.find((x) => x.id === fahad.id).messagesSent, 1, 'messagesSent from DB');
-  assert(Number(row.m) === 4 && Number(row.v) > 5 && Number(row.a) === 3 && Number(row.gp) === 20, JSON.stringify(row));
+  assert(Number(row.m) === 4 && Number(row.v) > 5 && Number(row.a) === 3 && Number(row.gp) === LIMIT + 5, JSON.stringify(row));
 
   // play again
   const host = players.find((b) => b.view.room.hostId === b.id);

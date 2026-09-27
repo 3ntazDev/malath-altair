@@ -302,6 +302,13 @@
       S.formError = '';
       await sync();
     },
+    async 'delete-account'() {
+      if (!(await ask({ title: 'حذف بياناتك؟', body: 'سيتم حذف اسمك وشخصيتك ورسائلك وكل بياناتك نهائيًا من الخادم. لا يمكن التراجع.', ok: 'حذف نهائي', cancel: 'إلغاء', danger: true }))) return;
+      const r = await api('session/delete');
+      if (!r.ok) return toast(r.error || 'تعذر الحذف. حاول مجددًا.', true);
+      resetSession();
+      toast('تم حذف بياناتك.');
+    },
     'lobby-pick'() { S.lobbyPick = !S.lobbyPick; render(); },
     async 'lobby-char'(el) {
       if (el.classList.contains('taken')) return;
@@ -518,6 +525,7 @@
         <button class="gbtn primary block" data-act="go" data-to="create">إنشاء مباراة</button>
         <button class="gbtn block" data-act="go" data-to="join">انضمام لمباراة</button>
       </div>
+      <p class="center small" style="margin-top:18px"><a class="linkbtn" href="/privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a> · <button class="linkbtn" data-act="delete-account">حذف بياناتي</button></p>
       ${credit()}
     </div></div>`;
   }
