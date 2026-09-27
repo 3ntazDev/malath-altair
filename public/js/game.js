@@ -451,7 +451,7 @@
   // ---------------- view helpers ----------------
   const player = (id) => (S.view && S.view.match ? S.view.match.players.find((p) => p.id === id) : null);
   const nameOf = (id) => { const p = player(id); if (p) return p.name; const m = S.view && S.view.room.members.find((x) => x.id === id); return m ? m.name : '—'; };
-  const credit = () => '<p class="credit" dir="ltr">Developer: <b dir="rtl">المبرمج فهد</b></p>';
+  const credit = () => '<p class="credit" dir="ltr">Developer: <b dir="rtl">فهد</b></p>';
   const steps = (n) => `<div class="steps" aria-label="الخطوة ${n} من 3">${[1, 2, 3].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</div>`;
 
   const PHASES = {
